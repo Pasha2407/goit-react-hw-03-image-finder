@@ -4,20 +4,11 @@ import { FcSearch } from 'react-icons/fc';
 import { IconContext } from 'react-icons';
 
 export class Searchbar extends Component {
-  state = {
-    search: '',
-  };
-
-  InputChange = event => {
-    const value = event.target.value;
-    const name = event.target.name;
-    this.setState({ [name]: value });
-  };
-
   Submit = event => {
     event.preventDefault();
-    this.props.searchImage(this.state.search);
-    this.setState({ search: '' });
+    const form = event.currentTarget;
+    const search = form.elements.search.value;
+    this.props.onSubmit(search);
   };
   render() {
     return (
@@ -28,15 +19,7 @@ export class Searchbar extends Component {
               <FcSearch />
             </IconContext.Provider>
           </button>
-          <input
-            type="text"
-            // autocomplete="off"
-            //autofocus
-            placeholder="Search images"
-            name="search"
-            onChange={this.InputChange}
-            value={this.state.search}
-          />
+          <input type="text" placeholder="Search images" name="search" />
         </form>
       </header>
     );

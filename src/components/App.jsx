@@ -14,22 +14,29 @@ export class App extends Component {
     isLoading: false,
     error: null,
     query: '',
+    page: 1,
+  };
+
+  onSubmit = event => {
+    this.setState({ query: event, page: 1 });
   };
 
   componentDidUpdate(_, prevState) {
-    const query = this.state.query;
-    if (query !== prevState.query) {
-      this.fetchImages(query);
+    if (
+      this.state.query !== prevState.query ||
+      this.state.page !== prevState.page
+    ) {
+      this.fetchImages();
     }
   }
 
-  fetchImages = async query => {
+  fetchImages = async () => {
     try {
       this.setState({
         isLoading: true,
       });
       const { data } = await axios.get(
-        `https://pixabay.com/api/?q=${query}&page=1&key=40276547-2ed900adc5a61ed15a312b440&image_type=photo&orientation=horizontal&per_page=12`
+        `https://pixabay.com/api/?q=${this.state.query}&page=${this.state.page}&key=40276547-2ed900adc5a61ed15a312b440&image_type=photo&orientation=horizontal&per_page=12`
       );
       this.setState({
         images: data.hits,
@@ -43,19 +50,23 @@ export class App extends Component {
     }
   };
 
-  searchImage = event => {
-    console.log(event);
-    this.setState({ query: event });
+  loadMore = () => {
+    this.setState({ page: this.state.page + 1 });
   };
+
   render() {
     return (
       <div className={css.App}>
-        <Searchbar searchImage={this.searchImage} />
+        <Searchbar onSubmit={this.onSubmit} />
+        {this.state.error !== null && (
+          <p style={{ color: 'red', margin: '0 auto' }}>
+            SORRY AN ERROR HAS OCCURRED
+            <br />
+            Error name: {this.state.error}
+          </p>
+        )}
+        {this.state.isLoading && <Loader />}
         <ImageGallery>
-          {this.state.error !== null && (
-            <p>Oops, some error occured... Error message: {this.state.error}</p>
-          )}
-          {this.state.isLoading && <Loader />}
           {this.state.images !== null &&
             this.state.images.map(item => {
               return (
@@ -67,7 +78,7 @@ export class App extends Component {
               );
             })}
         </ImageGallery>
-        <Button />
+        {this.state.query && <Button onClick={this.loadMore} />}
       </div>
     );
   }
