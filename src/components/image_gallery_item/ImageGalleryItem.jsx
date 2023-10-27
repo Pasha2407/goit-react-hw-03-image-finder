@@ -4,7 +4,7 @@ export class ImageGalleryItem extends Component {
   render() {
     return (
       <li>
-        <img src={this.props.imageSrc} alt=""></img>
+        <img src={this.props.imageSrc} alt={this.props.alt}></img>
       </li>
     );
   }
