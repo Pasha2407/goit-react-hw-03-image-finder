@@ -1,11 +1,10 @@
 import { Component } from 'react';
 import { Searchbar } from './searchbar/Searchbar';
 import { ImageGallery } from './image_gallery/ImageGallery';
-import { ImageGalleryItem } from './image_gallery_item/ImageGalleryItem';
 import { Loader } from './loader/Loader';
 import { Button } from './button/Button';
+import { api } from './API';
 import css from './App.module.css';
-import axios from 'axios';
 
 export class App extends Component {
   state = {
@@ -14,6 +13,7 @@ export class App extends Component {
     page: 1,
     isLoading: false,
     error: null,
+    loadMore: false,
   };
 
   onSubmit = event => {
@@ -34,12 +34,16 @@ export class App extends Component {
       this.setState({
         isLoading: true,
       });
-      const { data } = await axios.get(
-        `https://pixabay.com/api/?q=${this.state.query}&page=${this.state.page}&key=40276547-2ed900adc5a61ed15a312b440&image_type=photo&orientation=horizontal&per_page=12`
-      );
+      const { data } = await api(this.state.query, this.state.page);
       this.setState(prevState => ({
         images: [...prevState.images, ...data.hits],
+        loadMore: true,
       }));
+      if (this.state.page >= Math.ceil(data.totalHits / 12)) {
+        this.setState({
+          loadMore: false,
+        });
+      }
     } catch (error) {
       this.setState({ error: error.message });
     } finally {
@@ -64,21 +68,9 @@ export class App extends Component {
             Error name: {this.state.error}
           </p>
         )}
-        <ImageGallery>
-          {this.state.images &&
-            this.state.images.map(item => {
-              return (
-                <ImageGalleryItem
-                  key={item.id}
-                  imageSrc={item.webformatURL}
-                  modalSrc={item.largeImageURL}
-                  alt={item.tags}
-                />
-              );
-            })}
-        </ImageGallery>
+        <ImageGallery imagesData={this.state.images} />
         {this.state.isLoading && <Loader />}
-        {this.state.query && <Button onClick={this.nextPage} />}
+        {this.state.loadMore && <Button onClick={this.nextPage} />}
       </div>
     );
   }

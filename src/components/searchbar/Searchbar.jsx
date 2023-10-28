@@ -8,6 +8,7 @@ export class Searchbar extends Component {
     event.preventDefault();
     const form = event.currentTarget;
     const search = form.elements.search.value.toLowerCase();
+    if (search.trim() === '') return alert('Can not be empty');
     this.props.onSubmit(search);
   };
 
