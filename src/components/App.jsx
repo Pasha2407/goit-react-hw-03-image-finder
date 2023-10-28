@@ -9,7 +9,7 @@ import axios from 'axios';
 
 export class App extends Component {
   state = {
-    images: null,
+    images: [],
     isLoading: false,
     error: null,
     query: '',
@@ -17,43 +17,19 @@ export class App extends Component {
   };
 
   onSubmit = event => {
-    this.setState({ query: event, page: 1 });
+    this.setState({ query: event });
   };
 
   componentDidUpdate(_, prevState) {
-    if (this.state.query !== prevState.query) {
+    if (
+      this.state.query !== prevState.query ||
+      this.state.page !== prevState.page
+    ) {
       this.fetchImages();
-    }
-    if (this.state.page !== prevState.page) {
-      this.loadMore();
     }
   }
 
   fetchImages = async () => {
-    try {
-      this.setState({
-        isLoading: true,
-      });
-      const { data } = await axios.get(
-        `https://pixabay.com/api/?q=${this.state.query}&page=${this.state.page}&key=40276547-2ed900adc5a61ed15a312b440&image_type=photo&orientation=horizontal&per_page=12`
-      );
-      this.setState({
-        images: data.hits,
-      });
-    } catch (error) {
-      this.setState({ error: error.message });
-    } finally {
-      this.setState({
-        isLoading: false,
-      });
-    }
-  };
-
-  nextPage = () => {
-    this.setState({ page: this.state.page + 1 });
-  };
-
-  loadMore = async () => {
     try {
       this.setState({
         isLoading: true,
@@ -73,6 +49,10 @@ export class App extends Component {
     }
   };
 
+  nextPage = () => {
+    this.setState({ page: this.state.page + 1 });
+  };
+
   render() {
     return (
       <div className={css.App}>
@@ -85,7 +65,7 @@ export class App extends Component {
           </p>
         )}
         <ImageGallery>
-          {this.state.images !== null &&
+          {this.state.images &&
             this.state.images.map(item => {
               return (
                 <ImageGalleryItem
