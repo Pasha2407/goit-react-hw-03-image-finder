@@ -7,7 +7,7 @@ export class Searchbar extends Component {
   Submit = event => {
     event.preventDefault();
     const form = event.currentTarget;
-    const search = form.elements.search.value;
+    const search = form.elements.search.value.toLowerCase();
     this.props.onSubmit(search);
   };
   render() {
