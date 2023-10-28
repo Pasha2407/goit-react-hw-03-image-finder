@@ -10,6 +10,7 @@ export class Searchbar extends Component {
     const search = form.elements.search.value.toLowerCase();
     this.props.onSubmit(search);
   };
+
   render() {
     return (
       <header className={css.Searchbar}>

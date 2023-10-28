@@ -10,14 +10,14 @@ import axios from 'axios';
 export class App extends Component {
   state = {
     images: [],
-    isLoading: false,
-    error: null,
     query: '',
     page: 1,
+    isLoading: false,
+    error: null,
   };
 
   onSubmit = event => {
-    this.setState({ query: event });
+    this.setState({ query: event, images: [], page: 1 });
   };
 
   componentDidUpdate(_, prevState) {
